@@ -1,0 +1,1 @@
+mysqldump --user=root --password= --databases gescom_2020-08-18 > C:\Backup\backup_afpa_gescom.sql

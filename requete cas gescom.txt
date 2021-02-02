@@ -1,0 +1,122 @@
+Q1. Afficher dans l'ordre alphabétique et sur une seule colonne les noms et prénoms des employés qui ont des enfants, présenter d'abord ceux qui en ont le plus.
+
+SELECT CONCAT(emp_lastname,' ',emp_firstname),emp_children
+FROM employees
+WHERE emp_children>0
+ORDER BY emp_children DESC
+
+
+Q2. Y-a-t-il des clients étrangers ? Afficher leur nom, prénom et pays de résidence.
+
+SELECT cus_lastname, cus_firstname, cus_countries_id
+FROM customers 
+WHERE cus_countries_id != "FR"
+
+Q3. Afficher par ordre alphabétique les villes de résidence des clients ainsi que le code (ou le nom) du pays.
+
+SELECT cus_city,cus_countries_id,cou_name
+FROM customers,countries 
+WHERE cus_countries_id=cou_id
+GROUP BY cus_city
+ORDER BY cus_city
+
+Q4. Afficher le nom des clients dont les fiches ont été modifiées
+
+SELECT cus_lastname,cus_update_date
+FROM customers
+WHERE cus_update_date IS NOT NULL
+
+
+Q5. La commerciale Coco Merce veut consulter la fiche d'un client, mais la seule chose dont elle se souvienne est qu'il habite une ville genre 'divos'. Pouvez-vous l'aider ?
+
+SELECT cus_lastname,cus_firstname,cus_city
+FROM customers
+WHERE cus_city LIKE '%DIVOS%'
+
+Q6. Quel est le produit vendu le moins cher ? Afficher le prix, l'id et le nom du produit.
+
+?????
+
+SELECT MIN(pro_price),pro_id,pro_name
+FROM products
+
+Q7. Lister les produits qui n'ont jamais été vendus
+
+???
+
+Q8. Afficher les produits commandés par Madame Pikatchien.
+
+SELECT pro_id,pro_ref,pro_name,cus_id,ord_id,ode_id
+FROM customers,orders,orders_details,products
+WHERE  ode_ord_id=ord_id AND ord_cus_id=cus_id AND ode_pro_id=pro_id AND cus_lastname='Pikatchien'
+
+Q9. Afficher le catalogue des produits par catégorie, le nom des produits et de la catégorie doivent être affichés.
+
+SELECT cat_id,cat_name,pro_name
+FROM categories,products
+WHERE pro_cat_id=cat_id
+ORDER BY cat_name
+
+Q10. Afficher l'organigramme hiérarchique (nom et prénom et poste des employés) du magasin de Compiègne, classer par ordre alphabétique. Afficher le nom et prénom des employés, éventuellement le poste (si vous y parvenez).
+
+???
+
+SELECT DISTINCT CONCAT(emp_lastname,' ',emp_firstname)AS Employés, CONCAT(emp_lastname,' ',emp_firstname)AS Supèrieur
+FROM employees,shops
+WHERE emp_sho_id=sho_id AND sho_name='Jarditou Siège' 
+
+Q11. Quel produit a été vendu avec la remise la plus élevée ? Afficher le montant de la remise, le numéro et le nom du produit, le numéro de commande et de ligne de commande.
+
+SELECT MAX(ode_discount),pro_id,pro_name,ord_id
+FROM orders_details,orders,products
+WHERE ode_ord_id=ord_id AND ode_pro_id=pro_id
+
+Q13. Combien y-a-t-il de clients canadiens ? Afficher dans une colonne intitulée 'Nb clients Canada'
+
+SELECT COUNT(cus_id)AS 'NB clients Canada'
+FROM countries,customers
+WHERE cus_countries_id=cou_id AND cou_name='Canada'
+
+Q16. Afficher le détail des commandes de 2020.
+
+SELECT ode_id,ode_unit_price,ode_discount,ode_quantity,ode_ord_id,ode_pro_id,ord_order_date
+FROM orders,orders_details
+WHERE ode_ord_id=ord_id
+HAVING YEAR(ord_order_date)=2020
+ORDER BY ode_ord_id
+
+Q17. Afficher les coordonnées des fournisseurs pour lesquels des commandes ont été passées.
+
+SELECT DISTINCT sup_name,sup_city,sup_zipcode,sup_contact,sup_mail
+FROM suppliers,products,orders,orders_details
+WHERE sup_id=pro_sup_id AND ode_pro_id=pro_id AND ord_id=ode_ord_id
+
+Q18. Quel est le chiffre d'affaires de 2020 ?
+
+SELECT SUM((ode_unit_price * ode_quantity)-(ode_unit_price*ode_quantity*ode_discount/100)) AS 'CA 2020',ord_order_date
+FROM orders,orders_details
+WHERE ode_ord_id=ord_id
+GROUP BY YEAR(ord_order_date)
+HAVING YEAR(ord_order_date)=2020
+ORDER BY ode_ord_id
+
+Q19. Quel est le panier moyen ?
+
+SELECT AVG((ode_unit_price * ode_quantity)-(ode_unit_price*ode_quantity*ode_discount/100)) AS 'CA 2020',ord_order_date
+FROM orders,orders_details
+WHERE ode_ord_id=ord_id
+GROUP BY YEAR(ord_order_date)
+HAVING YEAR(ord_order_date)=2020
+ORDER BY ode_ord_id
+
+Q20. Lister le total de chaque commande par total décroissant (Afficher numéro de commande, date, total et nom du client).
+
+SELECT ord_id,cus_lastname,ord_order_date,SUM((ode_unit_price * ode_quantity)-(ode_unit_price*ode_quantity*ode_discount/100)) AS 'Total'
+FROM orders,customers,orders_details
+WHERE ode_ord_id=ord_id AND cus_id=ord_cus_id
+GROUP BY cus_lastname
+ORDER BY Total DESC
+
+
+
+
